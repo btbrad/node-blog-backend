@@ -14,7 +14,7 @@ server.listen(PORT, () => {
   }).start()
 
   setTimeout(() => {
-    spinner.text = chalk.blue.bold.underline(
+    spinner.text = chalk.blue.bold(
       `Server is running at http://localhost:${PORT}`
     )
   }, 1000)
