@@ -47,7 +47,11 @@ const serverHandler = (req, res) => {
 
     // 处理user路由
     const userResult = userRouterHandler(req, res)
-    userResult && handleResult(res, userResult)
+    userResult &&
+      userResult.then((data) => {
+        handleResult(res, data)
+      })
+
     if (blogResult || userResult) return
     // 404
     res.writeHead(404, { 'Content-type': 'text/plain' })
