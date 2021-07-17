@@ -40,7 +40,10 @@ const serverHandler = (req, res) => {
 
     // 处理blog路由
     const blogResult = blogRouterHandler(req, res)
-    blogResult && handleResult(res, blogResult)
+    blogResult &&
+      blogResult.then((data) => {
+        handleResult(res, data)
+      })
 
     // 处理user路由
     const userResult = userRouterHandler(req, res)

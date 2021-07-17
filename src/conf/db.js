@@ -1,15 +1,15 @@
 const env = process.env.NODE_ENV // 环境参数
 
 //配置
-const MYSQL_CONF
+let MYSQL_CONF = {}
 
-if (env === 'dev') {
+if (env === 'development') {
   MYSQL_CONF = {
     host: 'localhost',
-    user: 'root',
+    user: 'admin',
     password: '123456',
     port: '3306',
-    database: 'myblog'
+    database: 'myblog',
   }
 }
 
@@ -19,10 +19,10 @@ if (env === 'production') {
     user: 'xxxxx',
     password: 'xxxxx',
     port: '3306',
-    database: 'myblog'
+    database: 'myblog',
   }
 }
 
 module.exports = {
-  MYSQL_CONF
+  MYSQL_CONF,
 }
