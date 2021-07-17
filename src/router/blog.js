@@ -22,34 +22,41 @@ const handleBlogRouter = (req, res) => {
     }
     if (path === '/api/blog/detail') {
       const { id } = req.query
-      const detail = getDetail(id)
-      return new SuccessModel(detail)
+      return getDetail(id).then((res) => {
+        console.log(res)
+        return new SuccessModel(res)
+      })
     }
   }
   if (method === 'POST') {
     if (path === '/api/blog/new') {
       const blogData = req.body
-      const data = createBlog(blogData)
-      return new SuccessModel(data)
+      // const data = createBlog(blogData)
+      // return new SuccessModel(data)
+      return createBlog(blogData).then((res) => {
+        return new SuccessModel(res)
+      })
     }
     if (path === '/api/blog/update') {
       const { id } = req.query
       const blogData = req.body
-      const data = updateBlog(id, blogData)
-      if (data) {
-        return new SuccessModel(data)
-      } else {
-        return new ErrorModel('更新博客失败')
-      }
+      return updateBlog(id, blogData).then((data) => {
+        if (data) {
+          return new SuccessModel(data)
+        } else {
+          return new ErrorModel('更新博客失败')
+        }
+      })
     }
     if (path === '/api/blog/del') {
-      const { id } = req.query
-      const data = deleteBlog(id)
-      if (data) {
-        return new SuccessModel(data)
-      } else {
-        return new ErrorModel('删除博客失败')
-      }
+      const { id, author } = req.query
+      return deleteBlog(id, author).then((data) => {
+        if (data) {
+          return new SuccessModel(data)
+        } else {
+          return new ErrorModel('删除博客失败')
+        }
+      })
     }
   }
 }
