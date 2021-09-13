@@ -46,7 +46,6 @@ const serverHandler = (req, res) => {
     const val = arr[1]
     req.cookie[key] = val
   })
-  console.log('123', req.cookie)
 
   // 处理post data
   getPostData(req).then((postData) => {
