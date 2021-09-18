@@ -1,6 +1,7 @@
 const queryString = require('querystring')
 const blogRouterHandler = require('./src/router/blog')
 const userRouterHandler = require('./src/router/user')
+const { set, get } = require('./src/db/redis')
 
 // 获取cookie过期时间
 const getCookieExpires = () => {
@@ -10,7 +11,7 @@ const getCookieExpires = () => {
 }
 
 // session数据
-const SESSION_DATA = {}
+// const SESSION_DATA = {}
 
 // 用于处理 post data
 const getPostData = (req) => {
@@ -59,17 +60,18 @@ const serverHandler = (req, res) => {
 
   // 解析session
   let needSetCookie = false
-  let userId = req.cookie.userid
-  if (userId) {
-    if (!SESSION_DATA[userId]) {
-      SESSION_DATA[userId] = {}
+  let sId = req.cookie.sid
+  if (sId) {
+    if (!get(sId)) {
+      set(sId, {})
     }
   } else {
     needSetCookie = true
-    userId = `${Date.now()}_${Math.random()}`
-    SESSION_DATA[userId] = {}
+    sId = `${Date.now()}_${Math.random()}`
+    set(sId, {})
   }
-  req.session = SESSION_DATA[userId]
+  req.sid = sId
+  req.session = get(sId)
 
   // 处理post data
   getPostData(req).then((postData) => {
@@ -79,14 +81,14 @@ const serverHandler = (req, res) => {
     const blogResult = blogRouterHandler(req, res)
     blogResult &&
       blogResult.then((data) => {
-        handleResult(res, data)
+        handleResult(req, res, data, needSetCookie)
       })
 
     // 处理user路由
     const userResult = userRouterHandler(req, res)
     userResult &&
       userResult.then((data) => {
-        handleResult(res, data)
+        handleResult(req, res, data, needSetCookie)
       })
 
     if (blogResult || userResult) return
@@ -97,13 +99,14 @@ const serverHandler = (req, res) => {
   })
 }
 
-const handleResult = (res, result) => {
+const handleResult = (req, res, result, needSetCookie) => {
   // 设置返回格式JSON
   res.setHeader('Content-Type', 'application/json')
+
   if (needSetCookie) {
     res.setHeader(
       'Set-Cookie',
-      `userid=${userId}; path=/; httpOnly; expires=${getCookieExpires()}`
+      `sid=${req.sid}; path=/; httpOnly; expires=${getCookieExpires()}`
     )
   }
   res.write(JSON.stringify(result))
