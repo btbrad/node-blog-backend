@@ -2,6 +2,7 @@ const queryString = require('querystring')
 const blogRouterHandler = require('./src/router/blog')
 const userRouterHandler = require('./src/router/user')
 const { set, get } = require('./src/db/redis')
+const { access } = require('./src/utils/log')
 
 // 获取cookie过期时间
 const getCookieExpires = () => {
@@ -39,6 +40,13 @@ const getPostData = (req) => {
 }
 
 const serverHandler = (req, res) => {
+  // 记录access log
+  access(
+    `${req.method} -- ${req.url} -- ${
+      req.headers['user-agent']
+    } -- ${Date.now()}`
+  )
+
   const path = req.url.split('?')[0]
   req.path = path
 
