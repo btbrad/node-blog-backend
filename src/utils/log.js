@@ -10,7 +10,7 @@ function writeLog(writeStream, log) {
 function createWriteStream(fileName) {
   const fullFileName = path.join(__dirname, '../', '../', 'logs', fileName)
   const writeStream = fs.createWriteStream(fullFileName, {
-    flags: 'a',
+    flags: 'a', // 每次启动服务都是累加，否则会清空文件
   })
   return writeStream
 }
